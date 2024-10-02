@@ -9,11 +9,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $sp_controller = new SpotifyDataController;
-
-        // var_dump($sp_controller->getUserPlaylists());
         return view('dashboard', [
-            'user' => auth()->user(),
+            'user' => Auth::user(),
+            'controller' => app(SpotifyDataController::class),
         ]);
     }
 }

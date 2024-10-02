@@ -184,8 +184,11 @@ class SpotifyDataController extends Controller
         ];
     }
 
-    public function isSongInPlaylist($songSpotifyId, $playlistId, $userId = null)
+    public function isSongInPlaylist(Request $request, $userId = null)
     {
+        $songSpotifyId = $request->input('songSpotifyId');
+        $playlistId = $request->input('playlistId');
+
         $allPlaylists = collect($this->getUserPlaylistsWithSongs($userId));
 
         $playlist = $allPlaylists->firstWhere('id', $playlistId);

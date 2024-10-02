@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Playlist;
+use App\Models\Song;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,9 +29,84 @@ class SpotifyDataController extends Controller
         return $response->json();
     }
 
-    public function getUserPlaylists()
+    protected function parseNextUrl($url)
     {
-        $playlists = $this->makeApiRequest('me/playlists?limit=1', 'GET', ['limit' => 5]);
-        return $playlists;
+        if (!$url) {
+            return ['offset' => null, 'limit' => null];
+        }
+        parse_str(parse_url($url, PHP_URL_QUERY), $params);
+        return [
+            'offset' => $params['offset'] ?? null,
+            'limit' => $params['limit'] ?? null
+        ];
+    }
+
+    public function setUserPlaylists()
+    {
+        $limit = 100;
+        $user = Auth::user();
+        $offset = 0;
+
+        do {
+            $playlists = $this->makeApiRequest('me/playlists', 'GET', [
+                'limit' => $limit,
+                'offset' => $offset
+            ]);
+
+            foreach ($playlists['items'] as $playlistData) {
+                if ($playlistData['owner']['id'] !== $user->spotify_id) {
+                    continue;
+                }
+                $playlist = Playlist::updateOrCreate(
+                    ['spotify_id' => $playlistData['id']],
+                    [
+                        'image' => $playlistData['images'][0]['url'] ?? null,
+                        'name' => $playlistData['name'],
+                        'user_id' => $user->id,
+                    ]
+                );
+
+                $this->getPlaylistTracks($playlist, $playlistData['tracks']['href']);
+            }
+
+            $nextParams = $this->parseNextUrl($playlists['next'] ?? null);
+            $offset = $nextParams['offset'];
+        } while ($offset !== null);
+    }
+
+    protected function getPlaylistTracks(Playlist $playlist, $tracksHref)
+    {
+        $offset = 0;
+        $limit = 100;
+
+        do {
+            $tracks = $this->makeApiRequest(
+                str_replace('https://api.spotify.com/v1/', '', $tracksHref),
+                'GET',
+                ['offset' => $offset, 'limit' => $limit]
+            );
+
+            foreach ($tracks['items'] as $item) {
+                $trackData = $item['track'];
+                if (!isset($trackData['preview_url']) || !$trackData['preview_url']) {
+                    continue;
+                }
+                $song = Song::updateOrCreate(
+                    ['spotify_id' => $trackData['id']],
+                    [
+                        'preview_url' => $trackData['preview_url'],
+                        'image' => $trackData['album']['images'][0]['url'] ?? null,
+                        'name' => $trackData['name'],
+                        'artist' => $trackData['artists'][0]['name'],
+                        'album' => $trackData['album']['name'],
+                    ]
+                );
+
+                $playlist->songs()->syncWithoutDetaching([$song->id]);
+            }
+
+            $nextParams = $this->parseNextUrl($tracks['next'] ?? null);
+            $offset = $nextParams['offset'];
+        } while ($offset !== null);
     }
 }

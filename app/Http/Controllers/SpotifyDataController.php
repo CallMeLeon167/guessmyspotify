@@ -6,6 +6,7 @@ use App\Models\Playlist;
 use App\Models\Song;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
@@ -141,5 +142,58 @@ class SpotifyDataController extends Controller
         })->toArray();
 
         return $formattedPlaylists;
+    }
+
+    public function getRandomPlaylistsAndSong($userId = null)
+    {
+        $allPlaylists = collect($this->getUserPlaylistsWithSongs($userId));
+
+        $randomSong = $allPlaylists->flatMap->songs->random();
+
+        $selectedPlaylists = $allPlaylists->shuffle()->take(3)
+            ->map(function ($playlist) use ($randomSong) {
+                $containsSong = collect($playlist['songs'])->contains('spotify_id', $randomSong['spotify_id']);
+                return [
+                    'id' => $playlist['id'],
+                    'spotify_id' => $playlist['spotify_id'],
+                    'name' => $playlist['name'],
+                    'image' => $playlist['image'],
+                    'contains_song' => $containsSong,
+                ];
+            })
+            ->sortByDesc('contains_song')
+            ->values();
+
+        if (!$selectedPlaylists->contains('contains_song', true)) {
+            $playlistWithSong = $allPlaylists->first(function ($playlist) use ($randomSong) {
+                return collect($playlist['songs'])->contains('spotify_id', $randomSong['spotify_id']);
+            });
+            $selectedPlaylists->pop();
+            $selectedPlaylists->push([
+                'id' => $playlistWithSong['id'],
+                'spotify_id' => $playlistWithSong['spotify_id'],
+                'name' => $playlistWithSong['name'],
+                'image' => $playlistWithSong['image'],
+                'contains_song' => true,
+            ]);
+        }
+
+        return [
+            'playlists' => $selectedPlaylists->shuffle()->values()->all(),
+            'song' => Arr::except($randomSong, ['preview_url']),
+        ];
+    }
+
+    public function isSongInPlaylist($songSpotifyId, $playlistId, $userId = null)
+    {
+        $allPlaylists = collect($this->getUserPlaylistsWithSongs($userId));
+
+        $playlist = $allPlaylists->firstWhere('id', $playlistId);
+
+        if (!$playlist) {
+            return false;
+        }
+
+        return collect($playlist['songs'])->contains('spotify_id', $songSpotifyId);
     }
 }

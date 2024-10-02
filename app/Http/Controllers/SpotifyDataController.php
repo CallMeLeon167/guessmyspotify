@@ -11,6 +11,10 @@ class SpotifyDataController extends Controller
 {
     protected function makeApiRequest($endpoint, $method = 'GET', $data = [])
     {
+        if (Auth::check() === false) {
+            return [];
+        }
+
         $user = Auth::user();
         if (Carbon::now()->gt($user->token_expires_at)) {
             $spotifyController = new SpotifyUserController();
@@ -20,14 +24,12 @@ class SpotifyDataController extends Controller
             }
         }
         $response = Http::withToken($user->access_token)->$method("https://api.spotify.com/v1/$endpoint", $data);
-
         return $response->json();
     }
 
     public function getUserPlaylists()
     {
-        $playlists = $this->makeApiRequest('me/playlists');
-
+        $playlists = $this->makeApiRequest('me/playlists?limit=1', 'GET', ['limit' => 5]);
         return $playlists;
     }
 }

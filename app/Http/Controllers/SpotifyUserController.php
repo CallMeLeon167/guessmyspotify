@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SpotifyUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class SpotifyUserController extends Controller
@@ -68,6 +69,54 @@ class SpotifyUserController extends Controller
             ]
         );
 
-        return redirect('/')->with('success', 'Spotify-Konto erfolgreich verknüpft!');
+        Auth::login($spotifyUser);
+        return redirect('/')->with('success', 'Successfully logged in with Spotify!');
+    }
+
+    public function refreshAccessToken(SpotifyUser $user)
+    {
+        $response = Http::asForm()->post('https://accounts.spotify.com/api/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $user->refresh_token,
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
+        ]);
+
+        $data = $response->json();
+
+        if (isset($data['access_token'])) {
+            $user->update([
+                'access_token' => $data['access_token'],
+                'token_expires_at' => Carbon::now()->addSeconds($data['expires_in']),
+            ]);
+
+            return $data['access_token'];
+        }
+
+        return null;
+    }
+
+    public function makeApiRequest($endpoint, $method = 'GET', $data = [])
+    {
+        $user = Auth::user();
+
+        if (Carbon::now()->gt($user->token_expires_at)) {
+            $newAccessToken = $this->refreshAccessToken($user);
+            if (!$newAccessToken) {
+                return null; // Token refresh failed
+            }
+        }
+
+        $response = Http::withToken($user->access_token)->$method("https://api.spotify.com/v1/$endpoint", $data);
+
+        return $response->json();
+    }
+
+    public function getUserPlaylists(Request $request)
+    {
+        $spotifyController = new SpotifyUserController();
+        $playlists = $spotifyController->makeApiRequest('me/playlists');
+
+        return view('playlists', ['playlists' => $playlists]);
     }
 }

@@ -109,4 +109,37 @@ class SpotifyDataController extends Controller
             $offset = $nextParams['offset'];
         } while ($offset !== null);
     }
+
+    public function getUserPlaylistsWithSongs($userId = null)
+    {
+        $user = $userId ? Auth::findOrFail($userId) : Auth::user();
+
+        $playlists = Playlist::where('user_id', $user->id)
+            ->with(['songs' => function ($query) {
+                $query->select('songs.id', 'spotify_id', 'name', 'artist', 'album', 'preview_url', 'image');
+            }])
+            ->get(['id', 'spotify_id', 'name', 'image']);
+
+        $formattedPlaylists = $playlists->map(function ($playlist) {
+            return [
+                'id' => $playlist->id,
+                'spotify_id' => $playlist->spotify_id,
+                'name' => $playlist->name,
+                'image' => $playlist->image,
+                'songs' => $playlist->songs->map(function ($song) {
+                    return [
+                        'id' => $song->id,
+                        'spotify_id' => $song->spotify_id,
+                        'name' => $song->name,
+                        'artist' => $song->artist,
+                        'album' => $song->album,
+                        'preview_url' => $song->preview_url,
+                        'image' => $song->image,
+                    ];
+                })->toArray(),
+            ];
+        })->toArray();
+
+        return $formattedPlaylists;
+    }
 }

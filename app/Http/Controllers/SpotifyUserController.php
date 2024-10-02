@@ -95,28 +95,4 @@ class SpotifyUserController extends Controller
 
         return null;
     }
-
-    public function makeApiRequest($endpoint, $method = 'GET', $data = [])
-    {
-        $user = Auth::user();
-
-        if (Carbon::now()->gt($user->token_expires_at)) {
-            $newAccessToken = $this->refreshAccessToken($user);
-            if (!$newAccessToken) {
-                return null; // Token refresh failed
-            }
-        }
-
-        $response = Http::withToken($user->access_token)->$method("https://api.spotify.com/v1/$endpoint", $data);
-
-        return $response->json();
-    }
-
-    public function getUserPlaylists(Request $request)
-    {
-        $spotifyController = new SpotifyUserController();
-        $playlists = $spotifyController->makeApiRequest('me/playlists');
-
-        return view('playlists', ['playlists' => $playlists]);
-    }
 }

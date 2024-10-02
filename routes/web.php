@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SpotifyUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,10 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::get('/login', [SpotifyUserController::class, 'redirectToSpotify'])->name('login');
 Route::get('/callback', [SpotifyUserController::class, 'handleCallback']);

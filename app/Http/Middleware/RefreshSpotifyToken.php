@@ -23,7 +23,7 @@ class RefreshSpotifyToken
                 if (!$newAccessToken) {
                     // Token refresh failed
                     Auth::logout();
-                    return redirect('/login')->with('error', 'Spotify session expired. Please log in again.');
+                    return redirect('/login')->with('error', 'Spotify-Sitzung abgelaufen. Bitte loggen Sie sich erneut ein.');
                 }
             }
         }

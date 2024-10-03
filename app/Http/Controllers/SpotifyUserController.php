@@ -71,7 +71,7 @@ class SpotifyUserController extends Controller
         );
 
         Auth::login($spotifyUser);
-        return redirect('/')->with('success', 'Successfully logged in with Spotify!');
+        return redirect('/')->with('success', 'Erfolgreich mit Spotify verbunden!');
     }
 
     public function refreshAccessToken(SpotifyUser $user)

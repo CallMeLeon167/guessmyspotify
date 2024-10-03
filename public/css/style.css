@@ -245,6 +245,16 @@ p {
     overflow: hidden;
 }
 
+.playlist.incorrect {
+    pointer-events: none;
+    opacity: .3;
+    background: linear-gradient(135deg, rgb(185 29 29 / 30%), rgba(29, 185, 84, 0));
+}
+
+.playlist.correct {
+    background: linear-gradient(135deg, rgba(29, 185, 84, 0.3), rgba(29, 185, 84, 0));
+}
+
 .playlist::before {
     content: '';
     position: absolute;

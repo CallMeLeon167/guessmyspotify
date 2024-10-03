@@ -81,6 +81,7 @@ $(document).ready(function () {
 
     $(document).on('click', '.playlist', function () {
         let selectedPlaylistId = $(this).data('id');
+        $this = $(this);
         $.ajax({
             url: '/api/spotify/is-song-in-playlist/' + userId,
             method: 'GET',
@@ -97,10 +98,13 @@ $(document).ready(function () {
                     setTimeout(() => $('#quiz-container').removeClass(
                         'success-animation'), 500);
                     $('#next-question').show();
+                    $('.playlist').css('pointer-events', 'none');
+                    $this.addClass('correct');
                 } else {
                     $('#result').text('Falsch. Der Song ist nicht in dieser Playlist.')
                         .addClass('incorrect').removeClass('correct');
                     $('#next-question').hide();
+                    $this.addClass('incorrect');
                 }
             },
             error: function (xhr, status, error) {

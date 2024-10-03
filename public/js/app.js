@@ -1,13 +1,11 @@
 $(document).ready(function () {
     let currentSong;
-    let correctPlaylistId;
     let audio = new Audio();
     let isPlaying = false;
-    let duration = 0;
 
     function loadQuestion() {
         $.ajax({
-            url: '/api/spotify/random-playlists-and-song',
+            url: '/api/spotify/random-playlists-and-song/' + userId,
             method: 'GET',
             success: function (response) {
                 currentSong = response.song;
@@ -50,7 +48,6 @@ $(document).ready(function () {
                 $('#result').text('').removeClass('correct incorrect');
                 $('#next-question').hide();
 
-                // Verzögerung hinzufügen, bevor der Audio-Player initialisiert wird
                 setTimeout(() => {
                     initAudioPlayer(currentSong.preview_url);
                 }, 100);
@@ -64,10 +61,28 @@ $(document).ready(function () {
         });
     }
 
+    function loadUserStats() {
+        $.ajax({
+            url: '/api/spotify/user-stats/' + userId,
+            method: 'GET',
+            success: function (response) {
+                $('.playlist-from').html(`
+                    ${response.song_count} Songs und ${response.playlist_count} Playlists von ${response.display_name}
+                    `);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+                $('#user-info').html(
+                    '<p style="color: #ff4136;">Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</p>'
+                );
+            }
+        });
+    }
+
     $(document).on('click', '.playlist', function () {
         let selectedPlaylistId = $(this).data('id');
         $.ajax({
-            url: '/api/spotify/is-song-in-playlist',
+            url: '/api/spotify/is-song-in-playlist/' + userId,
             method: 'GET',
             data: {
                 songSpotifyId: currentSong.spotify_id,
@@ -101,10 +116,12 @@ $(document).ready(function () {
         loadQuestion();
     });
 
-    $('#play-btn, #start-btn').click(function () {
+    $('#start-btn, .challange-user.btn').click(function () {
+        userId = $(this).data('id');
         $('#home').hide();
         $('#game').show().addClass('fade-in');
         loadQuestion();
+        loadUserStats();
     });
 
     $(document).on('click', '#playPauseBtn', function () {

@@ -24,14 +24,14 @@
             <p>Tauche ein in die Welt der Musik und teste dein Wissen über Spotify-Playlists. Erkenne Songs und ordne
                 sie den richtigen Playlists zu. Bist du bereit für die musikalische Herausforderung?</p>
             @if (Auth::check())
-                <button id="start-btn" class="btn">
+                <button id="start-btn" class="btn" data-id="{{ $user->id }}">
                     Jetzt spielen</button>
                 <div class="challange">
                     <h2>Spiele die Playlisten anderer Spieler</h2>
                     <div class="challange-container">
                         @foreach ($controller->getAllUser() as $user)
                             @continue($user->id == Auth::id())
-                            <div class="challange-user btn">
+                            <div class="challange-user btn" data-id="{{ $user->id }}">
                                 @if ($user->image)
                                     <img src="{{ $user->image }}" alt="user-pfp">
                                 @endif
@@ -53,11 +53,7 @@
 
         <section id="game" class="fade-in">
             <div id="quiz-container">
-                @if ($controller->getUserStats())
-                    <span class="playlist-from">{{ $controller->getUserStats()['song_count'] }} Songs und
-                        {{ $controller->getUserStats()['playlist_count'] }} Playlists von
-                        {{ $controller->getUserStats()['display_name'] }}</span>
-                @endif
+                <span class="playlist-from"></span>
                 <div id="song-info">
                     <!-- Songbild, Titel und Künstler werden hier dynamisch eingefügt -->
                 </div>
@@ -65,7 +61,7 @@
                     <!-- Playlist-Optionen werden hier dynamisch eingefügt -->
                 </div>
                 <div id="result"></div>
-                <button id="next-question" class="btn" style="display: none;">Nächste Frage</button>
+                <button id="next-question" class="btn" style="display: none;">Nächster Song</button>
             </div>
         </section>
     </main>

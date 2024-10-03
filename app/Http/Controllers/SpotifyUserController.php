@@ -70,7 +70,10 @@ class SpotifyUserController extends Controller
             ]
         );
 
+
         Auth::login($spotifyUser);
+        $dataController = new SpotifyDataController();
+        $dataController->setUserPlaylists();
         return redirect('/')->with('success', 'Erfolgreich mit Spotify verbunden!');
     }
 

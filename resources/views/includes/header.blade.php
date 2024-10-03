@@ -10,7 +10,9 @@
         </a>
         @if (Auth::check())
             <a href="{{ route('logout') }}" class="btn btn-nav">
-                <img src="{{ $user->image }}" alt="User PFP" class="user-pfp">
+                @if ($user->image)
+                    <img src="{{ $user->image }}" alt="User PFP" class="user-pfp">
+                @endif
                 Abmelden
             </a>
         @else

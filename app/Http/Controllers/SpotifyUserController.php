@@ -63,7 +63,7 @@ class SpotifyUserController extends Controller
             [
                 'email' => $userData['email'],
                 'display_name' => $userData['display_name'],
-                'image' => $userData['images'][0]['url'],
+                'image' => $userData['images'][0]['url'] ?? null,
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken,
                 'token_expires_at' => Carbon::now()->addSeconds($expiresIn),

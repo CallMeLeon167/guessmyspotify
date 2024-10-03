@@ -14,6 +14,7 @@ class SpotifyUser extends Authenticatable
         'spotify_id',
         'email',
         'display_name',
+        'image',
         'access_token',
         'refresh_token',
         'token_expires_at',

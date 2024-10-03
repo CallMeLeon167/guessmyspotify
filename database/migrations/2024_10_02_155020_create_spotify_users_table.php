@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('spotify_id')->unique();
             $table->string('email')->unique();
             $table->string('display_name')->nullable();
+            $table->string('image');
             $table->string('access_token');
             $table->string('refresh_token');
             $table->timestamp('token_expires_at');

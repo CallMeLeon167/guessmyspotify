@@ -22,7 +22,20 @@
                 </svg>
                 Spotify Playlist-Rätsel
             </a>
-            <button id="play-btn" class="btn">Spielen</button>
+            @if (Auth::check())
+                <a href="{{ route('logout') }}" class="btn btn-nav">
+                    <img src="{{ $user->image }}" alt="User PFP" class="user-pfp">
+                    Abmelden
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-nav"><svg xmlns="http://www.w3.org/2000/svg"
+                        fill="none" height="24" width="24" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                    </svg>
+                    Anmelden</a>
+            @endif
         </nav>
     </header>
 
@@ -31,7 +44,18 @@
             <h1>Willkommen beim Spotify Playlist-Rätsel!</h1>
             <p>Tauche ein in die Welt der Musik und teste dein Wissen über Spotify-Playlists. Erkenne Songs und ordne
                 sie den richtigen Playlists zu. Bist du bereit für die musikalische Herausforderung?</p>
-            <button id="start-btn" class="btn">Jetzt spielen</button>
+            @if (Auth::check())
+                <button id="start-btn" class="btn">
+                    Jetzt spielen</button>
+            @else
+                <a href="{{ route('login') }}" id="start-btn" class="btn btn-nav"><svg
+                        xmlns="http://www.w3.org/2000/svg" fill="none" height="24" width="24"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                    </svg>
+                    Anmelden</a>
+            @endif
         </section>
 
         <section id="game" class="fade-in">

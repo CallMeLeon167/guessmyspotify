@@ -138,6 +138,39 @@ p {
     margin-right: auto;
 }
 
+.challange {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+
+    background-color: var(--spotify-dark-gray);
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 800px;
+    width: 100%;
+    margin: 40px auto 0 auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.challange-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.challange-user {
+    display: flex;
+    gap: 5px;
+    padding: 7px 10px;
+}
+
+.challange-user img {
+    height: 40px;
+    border-radius: 50%;
+}
+
 #game {
     display: none;
 }

@@ -23,6 +23,20 @@
             @if (Auth::check())
                 <button id="start-btn" class="btn">
                     Jetzt spielen</button>
+                <div class="challange">
+                    <h2>Spiele die Playlisten anderer Spieler</h2>
+                    <div class="challange-container">
+                        @foreach ($controller->getAllUser() as $user)
+                            @continue($user->id == Auth::id())
+                            <div class="challange-user btn">
+                                @if ($user->image)
+                                    <img src="{{ $user->image }}" alt="user-pfp">
+                                @endif
+                                <span>{{ $user->display_name }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             @else
                 <a href="{{ route('login') }}" class="btn btn-nav"><svg xmlns="http://www.w3.org/2000/svg"
                         fill="none" height="24" width="24" viewBox="0 0 24 24" stroke-width="1.5"

@@ -196,6 +196,10 @@ p {
     margin-bottom: 10px;
 }
 
+.playlist-from {
+    color: var(--spotify-offwhite);
+}
+
 .playlist {
     background-color: var(--spotify-light-gray);
     border-radius: 12px;

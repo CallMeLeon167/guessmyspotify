@@ -36,7 +36,9 @@
 
         <section id="game" class="fade-in">
             <div id="quiz-container">
-                <span class="playlist-from">Songs und Playlists von Leon</span>
+                <span class="playlist-from">{{ $controller->getUserStats()['song_count'] }} Songs und
+                    {{ $controller->getUserStats()['playlist_count'] }} Playlists von
+                    {{ $controller->getUserStats()['display_name'] }}</span>
                 <div id="song-info">
                     <!-- Songbild, Titel und Künstler werden hier dynamisch eingefügt -->
                 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Playlist;
 use App\Models\Song;
+use App\Models\SpotifyUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -198,5 +199,23 @@ class SpotifyDataController extends Controller
         }
 
         return collect($playlist['songs'])->contains('spotify_id', $songSpotifyId);
+    }
+
+    public function getUserStats($userId = null)
+    {
+        $user = $userId ? SpotifyUser::findOrFail($userId) : Auth::user();
+
+        $playlistCount = Playlist::where('user_id', $user->id)->count();
+
+        $songCount = Song::whereHas('playlists', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->count();
+
+        return [
+            'user_id' => $user->id,
+            'display_name' => $user->display_name,
+            'playlist_count' => $playlistCount,
+            'song_count' => $songCount,
+        ];
     }
 }

@@ -12,7 +12,7 @@ class Playlist extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(SpotifyUser::class);
     }
 
     public function songs(): BelongsToMany

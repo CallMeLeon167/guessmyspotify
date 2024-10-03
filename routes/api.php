@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/spotify/random-playlists-and-song/{userid?}', [SpotifyDataController::class, 'getRandomPlaylistsAndSong']);
-    Route::get('/spotify/is-song-in-playlist/{userid?}', [SpotifyDataController::class, 'isSongInPlaylist']);
+    Route::get('/spotify/random-playlists-and-song/{userId?}', [SpotifyDataController::class, 'getRandomPlaylistsAndSong']);
+    Route::get('/spotify/is-song-in-playlist/{userId?}', [SpotifyDataController::class, 'isSongInPlaylist']);
+    Route::get('/spotify/user-stats/{userId?}', [SpotifyDataController::class, 'getUserStats']);
 });

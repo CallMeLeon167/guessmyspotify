@@ -114,7 +114,7 @@ class SpotifyDataController extends Controller
 
     public function getUserPlaylistsWithSongs($userId = null)
     {
-        $user = $userId ? Auth::findOrFail($userId) : Auth::user();
+        $user = $userId ? SpotifyUser::findOrFail($userId) : Auth::user();
 
         $playlists = Playlist::where('user_id', $user->id)
             ->with(['songs' => function ($query) {

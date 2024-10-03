@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     let currentSong;
     let correctPlaylistId;
     let audio = new Audio();
@@ -9,9 +9,10 @@ $(document).ready(function() {
         $.ajax({
             url: '/api/spotify/random-playlists-and-song',
             method: 'GET',
-            success: function(response) {
+            success: function (response) {
                 currentSong = response.song;
                 let playlists = response.playlists;
+                const spotifyLink = createSpotifyLink(currentSong.spotify_id, 'track');
 
                 $('#song-info').html(`
             <h2>In welcher Playlist ist dieser Song?</h2>
@@ -33,10 +34,11 @@ $(document).ready(function() {
                         </div>
                     <div class="time" id="timeDisplay">0:00</div>
                 </div>
+            ${spotifyLink}
         `);
 
                 let playlistsHtml = '';
-                playlists.forEach(function(playlist) {
+                playlists.forEach(function (playlist) {
                     playlistsHtml += `
                 <div class="playlist" data-id="${playlist.id}">
                     <img src="${playlist.image}" alt="${playlist.name}">
@@ -53,7 +55,7 @@ $(document).ready(function() {
                     initAudioPlayer(currentSong.preview_url);
                 }, 100);
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('Error:', error);
                 $('#quiz-container').html(
                     '<p style="color: #ff4136;">Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.</p>'
@@ -62,7 +64,7 @@ $(document).ready(function() {
         });
     }
 
-    $(document).on('click', '.playlist', function() {
+    $(document).on('click', '.playlist', function () {
         let selectedPlaylistId = $(this).data('id');
         $.ajax({
             url: '/api/spotify/is-song-in-playlist',
@@ -71,7 +73,7 @@ $(document).ready(function() {
                 songSpotifyId: currentSong.spotify_id,
                 playlistId: selectedPlaylistId
             },
-            success: function(isInPlaylist) {
+            success: function (isInPlaylist) {
                 if (isInPlaylist) {
                     $('#result').text('Richtig! Der Song ist in dieser Playlist.')
                         .addClass('correct').removeClass('incorrect');
@@ -86,7 +88,7 @@ $(document).ready(function() {
                     $('#next-question').hide();
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('Error:', error);
                 $('#result').text(
                     'Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.'
@@ -95,17 +97,17 @@ $(document).ready(function() {
         });
     });
 
-    $('#next-question').click(function() {
+    $('#next-question').click(function () {
         loadQuestion();
     });
 
-    $('#play-btn, #start-btn').click(function() {
+    $('#play-btn, #start-btn').click(function () {
         $('#home').hide();
         $('#game').show().addClass('fade-in');
         loadQuestion();
     });
 
-    $(document).on('click', '#playPauseBtn', function() {
+    $(document).on('click', '#playPauseBtn', function () {
         if (isPlaying) {
             audio.pause();
             $(this).html(
@@ -120,7 +122,7 @@ $(document).ready(function() {
         isPlaying = !isPlaying;
     });
 
-    $(document).on('click', '#progressBar', function(e) {
+    $(document).on('click', '#progressBar', function (e) {
         const clickPosition = e.pageX - $(this).offset().left;
         const clickPercent = clickPosition / $(this).width();
         audio.currentTime = clickPercent * audio.duration;
@@ -155,6 +157,12 @@ $(document).ready(function() {
         }
     }
 
+    function createSpotifyLink(spotifyId, type = 'track') {
+        const webPlayerUrl = `https://open.spotify.com/${type}/${spotifyId}`;
+        const spotifyUri = `spotify:${type}:${spotifyId}`;
+        return `<a href="${spotifyUri}" class="btn spotify-open">Auf Spotify öffnen</a>`;
+    }
+
     function initAudioPlayer(previewUrl) {
         audio.pause();
         audio.currentTime = 0;
@@ -163,14 +171,14 @@ $(document).ready(function() {
         audio.src = previewUrl;
         audio.load();
 
-        audio.addEventListener('loadedmetadata', function() {
+        audio.addEventListener('loadedmetadata', function () {
             duration = audio.duration;
             $('#timeDisplay').text(formatTime(0));
         });
 
         audio.addEventListener('timeupdate', updateProgressBar);
 
-        audio.addEventListener('ended', function() {
+        audio.addEventListener('ended', function () {
             isPlaying = false;
             $('#playPauseBtn').html(
                 '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'

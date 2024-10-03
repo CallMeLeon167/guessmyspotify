@@ -218,4 +218,10 @@ class SpotifyDataController extends Controller
             'song_count' => $songCount,
         ];
     }
+
+    public function getAllUser()
+    {
+        $users = SpotifyUser::all();
+        return $users;
+    }
 }

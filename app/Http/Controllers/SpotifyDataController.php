@@ -180,7 +180,7 @@ class SpotifyDataController extends Controller
 
         return [
             'playlists' => $selectedPlaylists->shuffle()->values()->all(),
-            'song' => Arr::except($randomSong, ['preview_url']),
+            'song' => $randomSong,
         ];
     }
 

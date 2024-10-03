@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+        var userId = @json(Auth::id());
+    </script>
 </head>
 
 <body>
@@ -50,9 +53,11 @@
 
         <section id="game" class="fade-in">
             <div id="quiz-container">
-                <span class="playlist-from">{{ $controller->getUserStats()['song_count'] }} Songs und
-                    {{ $controller->getUserStats()['playlist_count'] }} Playlists von
-                    {{ $controller->getUserStats()['display_name'] }}</span>
+                @if ($controller->getUserStats())
+                    <span class="playlist-from">{{ $controller->getUserStats()['song_count'] }} Songs und
+                        {{ $controller->getUserStats()['playlist_count'] }} Playlists von
+                        {{ $controller->getUserStats()['display_name'] }}</span>
+                @endif
                 <div id="song-info">
                     <!-- Songbild, Titel und Künstler werden hier dynamisch eingefügt -->
                 </div>

@@ -205,6 +205,10 @@ class SpotifyDataController extends Controller
     {
         $user = $userId ? SpotifyUser::findOrFail($userId) : Auth::user();
 
+        if (!$user) {
+            return [];
+        }
+
         $playlistCount = Playlist::where('user_id', $user->id)->count();
 
         $songCount = Song::whereHas('playlists', function ($query) use ($user) {

@@ -219,7 +219,7 @@ p {
 }
 
 #song-info p {
-    font-size: 20px;
+    font-size: 17px;
     color: var(--spotify-offwhite);
     margin-bottom: 0;
 }
@@ -306,7 +306,7 @@ p {
 .audio-player {
     background-color: var(--spotify-light-gray);
     border-radius: 30px;
-    padding: 10px 20px;
+    padding: 7px 15px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -448,7 +448,7 @@ footer {
     }
 
     .audio-player {
-        padding: 15px;
+        padding: 7px;
     }
 
     .progress-bar {
@@ -476,7 +476,7 @@ footer {
     }
 
     #song-info p {
-        font-size: 18px;
+        font-size: 13px;
     }
 
     #playlists {

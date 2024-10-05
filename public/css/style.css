@@ -54,6 +54,8 @@ a {
 .user-pfp {
     border-radius: 50%;
     height: 35px;
+    width: 35px;
+    object-fit: cover;
     margin-right: 5px;
 }
 
